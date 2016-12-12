@@ -2,69 +2,88 @@
 
 namespace app\models;
 
-class User extends \yii\base\Object implements \yii\web\IdentityInterface
+use Yii;
+
+/**
+ * This is the model class for table "users".
+ *
+ * @property integer $id
+ * @property string $login
+ * @property integer $balance
+ * @property string $authKey
+ * @property string $accessToken
+ */
+class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 {
-    public $id;
+    /*public $id;
     public $username;
-    public $password;
+    public $balance;
     public $authKey;
-    public $accessToken;
-
-    private static $users = [
-        '100' => [
-            'id' => '100',
-            'username' => 'admin',
-            'password' => 'admin',
-            'authKey' => 'test100key',
-            'accessToken' => '100-token',
-        ],
-        '101' => [
-            'id' => '101',
-            'username' => 'demo',
-            'password' => 'demo',
-            'authKey' => 'test101key',
-            'accessToken' => '101-token',
-        ],
-    ];
-
+    public $accessToken;*/
 
     /**
      * @inheritdoc
      */
-    public static function findIdentity($id)
+    public static function tableName()
     {
-        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
+        return 'users';
     }
 
     /**
      * @inheritdoc
      */
-    public static function findIdentityByAccessToken($token, $type = null)
+    public function rules()
     {
-        foreach (self::$users as $user) {
-            if ($user['accessToken'] === $token) {
-                return new static($user);
-            }
-        }
-
-        return null;
+        return [
+            [['username', 'balance'], 'required'],
+            [['balance'], 'integer'],
+            [['username'], 'string', 'max' => 60],
+            [['authKey', 'accessToken'], 'string', 'max' => 128],
+            [['username'], 'unique'],
+        ];
     }
 
-    /**
-     * Finds user by username
-     *
-     * @param string $username
-     * @return static|null
-     */
+    public static function createNewUser($username)
+    {
+        $new_user = new static();
+        $new_user->username = $username;
+        $new_user->balance = 0;
+        $new_user->authKey = '';
+        $new_user->accessToken = '';
+        $new_user->save();
+        return $new_user;
+    }
+
     public static function findByUsername($username)
     {
-        foreach (self::$users as $user) {
-            if (strcasecmp($user['username'], $username) === 0) {
-                return new static($user);
-            }
-        }
+        $user = self::getByWhere(['username' => $username]);
 
-        return null;
+        if(!$user)
+            $user = self::createNewUser($username);
+
+        return $user;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'username' => 'Login',
+            'balance' => 'Balance',
+            'authKey' => 'Auth Key',
+            'accessToken' => 'Access Token',
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function validateAuthKey($authKey)
+    {
+        return $this->authKey === $authKey;
     }
 
     /**
@@ -78,6 +97,14 @@ class User extends \yii\base\Object implements \yii\web\IdentityInterface
     /**
      * @inheritdoc
      */
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        return self::getByWhere(['accessToken' => $token]);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getAuthKey()
     {
         return $this->authKey;
@@ -86,19 +113,19 @@ class User extends \yii\base\Object implements \yii\web\IdentityInterface
     /**
      * @inheritdoc
      */
-    public function validateAuthKey($authKey)
+    public static function findIdentity($id)
     {
-        return $this->authKey === $authKey;
+        return self::getByWhere(['id' => $id]);
     }
 
-    /**
-     * Validates password
-     *
-     * @param string $password password to validate
-     * @return bool if password provided is valid for current user
-     */
-    public function validatePassword($password)
+    protected function getByWhere($where)
     {
-        return $this->password === $password;
+        $users = self::find()
+            ->where($where);
+
+        if($users->count() > 0)
+            return new static($users->one());
+
+        return null;
     }
 }
