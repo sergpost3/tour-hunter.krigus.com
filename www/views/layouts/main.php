@@ -33,25 +33,36 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
+
+    $menu = [];
+    if(Yii::$app->user->isGuest)
+    {
+        $menu = [
+            ['label' => 'Users', 'url' => ['/users/index']],
+            ['label' => 'Login', 'url' => ['/site/login']]
+        ];
+    }
+    else
+    {
+        $menu = [
+            ['label' => 'Users', 'url' => ['/users/index']],
+            ['label' => 'My Transactions', 'url' => ['/transactions/index']],
+            ['label' => 'My Invoices', 'url' => ['/invoices/index']],
+
+            '<li>'
+            . Html::beginForm(['/site/logout'], 'post')
+            . Html::submitButton(
+                'Logout (' . Yii::$app->user->identity->username . ')',
+                ['class' => 'btn btn-link logout']
+            )
+            . Html::endForm()
+            . '</li>'
+        ];
+    }
+
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
-        'items' => [
-            ['label' => 'Home', 'url' => ['/site/index']],
-            ['label' => 'About', 'url' => ['/site/about']],
-            ['label' => 'Contact', 'url' => ['/site/contact']],
-            Yii::$app->user->isGuest ? (
-                ['label' => 'Login', 'url' => ['/site/login']]
-            ) : (
-                '<li>'
-                . Html::beginForm(['/site/logout'], 'post')
-                . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->username . ')',
-                    ['class' => 'btn btn-link logout']
-                )
-                . Html::endForm()
-                . '</li>'
-            )
-        ],
+        'items' => $menu,
     ]);
     NavBar::end();
     ?>

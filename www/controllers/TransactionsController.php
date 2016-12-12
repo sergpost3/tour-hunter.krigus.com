@@ -3,16 +3,17 @@
 namespace app\controllers;
 
 use Yii;
-use app\models\Users;
+use app\models\Transactions;
+use app\models\TransactionForm;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * UsersController implements the CRUD actions for Users model.
+ * TransactionsController implements the CRUD actions for Transactions model.
  */
-class UsersController extends Controller
+class TransactionsController extends Controller
 {
     /**
      * @inheritdoc
@@ -30,13 +31,13 @@ class UsersController extends Controller
     }
 
     /**
-     * Lists all Users models.
+     * Lists all Transactions models.
      * @return mixed
      */
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Users::find(),
+            'query' => Transactions::find(),
         ]);
 
         return $this->render('index', [
@@ -45,7 +46,7 @@ class UsersController extends Controller
     }
 
     /**
-     * Displays a single Users model.
+     * Displays a single Transactions model.
      * @param integer $id
      * @return mixed
      */
@@ -57,25 +58,28 @@ class UsersController extends Controller
     }*/
 
     /**
-     * Creates a new Users model.
+     * Creates a new Transactions model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    /*public function actionCreate()
+    public function actionCreate()
     {
-        $model = new Users();
+        $model = new TransactionForm();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
+        if(Yii::$app->request->post()) {
+            if( $model->load( Yii::$app->request->post() ) && $model->createTransaction() ) {
+                return $this->redirect( [ 'transactions/index' ] );
+            }
+        }
+        else {
             return $this->render('create', [
                 'model' => $model,
             ]);
         }
-    }*/
+    }
 
     /**
-     * Updates an existing Users model.
+     * Updates an existing Transactions model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -94,7 +98,7 @@ class UsersController extends Controller
     }*/
 
     /**
-     * Deletes an existing Users model.
+     * Deletes an existing Transactions model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -107,15 +111,15 @@ class UsersController extends Controller
     }*/
 
     /**
-     * Finds the Users model based on its primary key value.
+     * Finds the Transactions model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Users the loaded model
+     * @return Transactions the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Users::findOne($id)) !== null) {
+        if (($model = Transactions::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
