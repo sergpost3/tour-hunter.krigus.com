@@ -29,6 +29,9 @@ class TransactionsController extends Controller
 
     public function actionIndex()
     {
+        if(Yii::$app->user->isGuest)
+            throw new \yii\web\ForbiddenHttpException();
+
         $dataProvider = new ActiveDataProvider([
             'query' => Transactions::find()
                 ->where(['sender_id' => Yii::$app->user->id])
@@ -42,6 +45,9 @@ class TransactionsController extends Controller
 
     public function actionCreate()
     {
+        if(Yii::$app->user->isGuest)
+            throw new \yii\web\ForbiddenHttpException();
+
         $model = new TransactionForm();
 
         if( $model->load( Yii::$app->request->post() ) && $model->createTransaction() ) {

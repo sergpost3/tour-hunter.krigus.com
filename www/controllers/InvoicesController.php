@@ -31,6 +31,9 @@ class InvoicesController extends Controller
 
     public function actionIndex()
     {
+        if(Yii::$app->user->isGuest)
+            throw new \yii\web\ForbiddenHttpException();
+
         $dataProvider = new ActiveDataProvider([
             'query' => Invoices::find()
                 ->where(['recipient_id' => Yii::$app->user->id])
@@ -47,7 +50,11 @@ class InvoicesController extends Controller
         ]);
     }
 
-    public function actionPay($id) {
+    public function actionPay($id)
+    {
+        if(Yii::$app->user->isGuest)
+            throw new \yii\web\ForbiddenHttpException();
+
         $invoice = Invoices::findOne(intval($id));
 
         if ($invoice && $invoice->pay()) {
@@ -57,7 +64,11 @@ class InvoicesController extends Controller
         }
     }
 
-    public function actionDeny($id) {
+    public function actionDeny($id)
+    {
+        if(Yii::$app->user->isGuest)
+            throw new \yii\web\ForbiddenHttpException();
+
         $invoice = Invoices::findOne(intval($id));
 
         if ($invoice && $invoice->deny()) {
@@ -69,6 +80,9 @@ class InvoicesController extends Controller
 
     public function actionCreate()
     {
+        if(Yii::$app->user->isGuest)
+            throw new \yii\web\ForbiddenHttpException();
+
         $model = new InvoiceForm();
 
         if ($model->load(Yii::$app->request->post()) && $model->createInvoice()) {
