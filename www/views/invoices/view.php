@@ -31,6 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'sender_id',
             'recipient_id',
+            'total',
             'status',
             'transaction_id',
         ],

@@ -44,7 +44,8 @@ $config = [
             'showScriptName' => false,
             'rules' => [
                 'users' => 'users/index',
-                'transactions' => 'transactions/index'
+                'transactions' => 'transactions/index',
+                'invoices' => 'invoices/index'
             ],
         ],
     ],

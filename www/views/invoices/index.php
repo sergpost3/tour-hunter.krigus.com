@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use app\models\User;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -14,20 +15,83 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Invoices', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Invoice', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            [
+                'label' => 'Sender',
+                'value' => function($data){
+                    return User::findIdentity($data->sender_id)->username;
+                }
+            ],
+            [
+                'label' => 'Recipient',
+                'value' => function($data){
+                    return User::findIdentity($data->recipient_id)->username;
+                }
+            ],
+            'total',
+            [
+                'label' => 'Status',
+                'value' => function($data){
+                    if(!$data->status)
+                        return "New";
+                    if(!$data->transaction_id)
+                        return "Denied";
+                    return "Paid";
+                }
+            ],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{pay} {deny}',
+                'buttons' => [
+                    'pay' => function ($url, $model) {
+                        return Html::a("Pay", $url, [
+                            'title' => Yii::t('yii', 'Pay'),
+                            'class' => 'btn btn-success'
+                        ]);
+                    },
+                    'deny' => function ($url, $model) {
+                        return Html::a("Deny", $url, [
+                            'title' => Yii::t('yii', 'Deny'),
+                            'class' => 'btn btn-danger'
+                        ]);
+                    }
+                ]
+            ],
+        ],
+    ]); ?>
 
-            'id',
-            'sender_id',
-            'recipient_id',
-            'status',
-            'transaction_id',
+    <h1><?= Html::encode("My invoices") ?></h1>
 
-            ['class' => 'yii\grid\ActionColumn'],
+    <?= GridView::widget([
+        'dataProvider' => $dataProviderTo,
+        'columns' => [
+            [
+                'label' => 'Sender',
+                'value' => function($data){
+                    return User::findIdentity($data->sender_id)->username;
+                }
+            ],
+            [
+                'label' => 'Recipient',
+                'value' => function($data){
+                    return User::findIdentity($data->recipient_id)->username;
+                }
+            ],
+            'total',
+            [
+                'label' => 'Status',
+                'value' => function($data){
+                    if(!$data->status)
+                        return "New";
+                    if(!$data->transaction_id)
+                        return "Denied";
+                    return "Paid";
+                }
+            ]
         ],
     ]); ?>
 </div>
