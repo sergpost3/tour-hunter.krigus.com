@@ -33,6 +33,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             'total',
+            [
+                'label' => 'Date',
+                'value' => function($data){
+                    return $data->created ? date("H:i d.m.Y", $data->created) : "";
+                }
+            ],
         ],
     ]); ?>
 </div>

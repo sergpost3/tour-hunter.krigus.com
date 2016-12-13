@@ -35,6 +35,27 @@ class Invoices extends \yii\db\ActiveRecord
         ];
     }
 
+    public function pay()
+    {
+        if($this->recipient_id !== Yii::$app->user->id)
+            return false;
+
+        $transaction_id = Transactions::sendMoney($this->recipient_id, $this->sender_id, $this->total);
+
+        $this->status = 1;
+        $this->transaction_id = $transaction_id;
+        return $this->save();
+    }
+
+    public function deny()
+    {
+        if($this->recipient_id !== Yii::$app->user->id)
+            return false;
+
+        $this->status = 1;
+        return $this->save();
+    }
+
     /**
      * @inheritdoc
      */

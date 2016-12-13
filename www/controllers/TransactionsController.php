@@ -13,7 +13,7 @@ use yii\filters\VerbFilter;
 /**
  * TransactionsController implements the CRUD actions for Transactions model.
  */
-class TransactionsController extends CController
+class TransactionsController extends Controller
 {
     public function behaviors()
     {

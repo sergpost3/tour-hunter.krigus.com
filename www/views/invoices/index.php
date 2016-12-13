@@ -48,12 +48,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 'template' => '{pay} {deny}',
                 'buttons' => [
                     'pay' => function ($url, $model) {
+                        if($model->status)
+                            return '';
                         return Html::a("Pay", $url, [
                             'title' => Yii::t('yii', 'Pay'),
                             'class' => 'btn btn-success'
                         ]);
                     },
                     'deny' => function ($url, $model) {
+                        if($model->status)
+                            return '';
                         return Html::a("Deny", $url, [
                             'title' => Yii::t('yii', 'Deny'),
                             'class' => 'btn btn-danger'

@@ -30,24 +30,6 @@ class TransactionForm extends Model
     }
 
     public function createTransaction() {
-        $recipient = User::findByUsername($this->recipient);
-
-        //if($recipient->getId() == Yii::$app->user->id)
-        //    return false;
-
-        $model = new Transactions();
-        $model->sender_id = Yii::$app->user->id;
-        $model->recipient_id = $recipient->getId();
-        $model->total = $this->total;
-        $model->save();
-
-        $recipient->balance += intval($this->total);
-        $recipient->save();
-
-        $sender = User::findIdentity(Yii::$app->user->id);
-        $sender->balance -= intval($this->total);
-        $sender->save();
-
-        return true;
+        return Transactions::sendMoney(Yii::$app->user->id, $this->recipient, $this->total);
     }
 }

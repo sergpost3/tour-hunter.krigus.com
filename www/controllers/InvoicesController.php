@@ -5,7 +5,9 @@ namespace app\controllers;
 use Yii;
 use app\models\Invoices;
 use app\models\InvoiceForm;
+use app\models\Transactions;
 use yii\data\ActiveDataProvider;
+use yii\db\Transaction;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -13,7 +15,7 @@ use yii\filters\VerbFilter;
 /**
  * InvoicesController implements the CRUD actions for Invoices model.
  */
-class InvoicesController extends CController
+class InvoicesController extends Controller
 {
     public function behaviors()
     {
@@ -43,6 +45,26 @@ class InvoicesController extends CController
             'dataProvider' => $dataProvider,
             'dataProviderTo' => $dataProviderTo,
         ]);
+    }
+
+    public function actionPay($id) {
+        $invoice = Invoices::findOne(intval($id));
+
+        if ($invoice && $invoice->pay()) {
+            return $this->redirect(['invoices/index']);
+        } else {
+            throw new \yii\web\ForbiddenHttpException();
+        }
+    }
+
+    public function actionDeny($id) {
+        $invoice = Invoices::findOne(intval($id));
+
+        if ($invoice && $invoice->deny()) {
+            return $this->redirect(['invoices/index']);
+        } else {
+            throw new \yii\web\ForbiddenHttpException();
+        }
     }
 
     public function actionCreate()
