@@ -37,7 +37,9 @@ class TransactionsController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Transactions::find(),
+            'query' => Transactions::find()
+                ->where(['sender_id' => Yii::$app->user->id])
+                ->orWhere(['recipient_id' => Yii::$app->user->id]),
         ]);
 
         return $this->render('index', [

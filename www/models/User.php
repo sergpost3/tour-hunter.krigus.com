@@ -38,8 +38,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             [['username', 'balance'], 'required'],
             [['balance'], 'integer'],
             [['username'], 'string', 'max' => 60],
-            [['authKey', 'accessToken'], 'string', 'max' => 128],
-            [['username'], 'unique'],
+            [['authKey', 'accessToken'], 'string', 'max' => 128]
         ];
     }
 
@@ -124,7 +123,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             ->where($where);
 
         if($users->count() > 0)
-            return new static($users->one());
+            return $users->one();
 
         return null;
     }
